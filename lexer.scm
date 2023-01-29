@@ -59,6 +59,7 @@
            ; read the rest of the escape sequence and recurse
            (read-string-tail (cons (read-escaped) read-so-far)))
           ; complete this procedure
+          (else (read-string-tail (append (list next-char) read-so-far)))
     )
   )
 )
@@ -84,7 +85,16 @@
 
 ; Read the rest of a boolean literal.
 (define (read-boolean-tail)
-  '() ; replace with your code
+  (let ((next-char (get-non-eof-char)))
+    (cond ((char=? next-char #\t) ; true
+           ; return a string token
+           (token-make 'boolean #t))
+          ((char=? next-char #\f) ; false
+           (token-make 'boolean #f))
+          ; raise error
+          (else (error "not a boolean"))
+    )
+  )
 )
 
 ;;;;;;;;;;;;;;;;;;;
@@ -99,9 +109,38 @@
 
 ; Read the rest of a character literal.
 (define (read-character-tail)
-  '() ; replace with your code
+  (let ((char (read-char)))
+    (if (delimiter? (peek-char))
+        (token-make 'character char)
+        (cond ((char=? char #\s)
+           (if (token-match (string->list "pace"))
+               (token-make 'character #\space)
+               (error "not a character token")
+           ))
+          ((char=? char #\n)
+           (if (token-match (string->list "ewline"))
+               (token-make 'character #\newline)
+               (error "not a character token")
+           ))
+          (else (error "character doesn't end in delimiter"))
+        )
+    )
+  )
 )
 
+; Determine if a token matches expected
+(define (token-match expected)
+  (if (equal? (length expected) 0)
+      (if (delimiter? (peek-char))
+          #t
+          (error "character doesn't end in delimiter")
+      )
+      (if (char=? (read-char) (car expected))
+          (token-match (cdr expected))
+          #f
+      )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;
 
