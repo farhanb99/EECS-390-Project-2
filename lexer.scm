@@ -133,7 +133,7 @@
   (if (equal? (length expected) 0)
       (if (delimiter? (peek-char))
           #t
-          (error "character doesn't end in delimiter")
+          (error "token doesn't end in delimiter")
       )
       (if (char=? (read-char) (car expected))
           (token-match (cdr expected))
@@ -201,9 +201,83 @@
 
 ; Read an identifier token.
 (define (read-identifier)
-  '() ; replace with your code
+  (let ((char (char-downcase (read-char))))
+    (cond ((sign? char)
+           (if (delimiter? (peek-char))
+               (token-make 'identifier (string->symbol (string char)))
+               (error "not an identifier")
+           ))
+          ((char=? char #\.)
+           (if (token-match (string->list ".."))
+               (token-make 'identifier (string->symbol "..."))
+               (error "not an identifier")
+           ))
+          ((initial? char)
+           (read-identifier-tail (list char)))
+          (else (error "not an identifier"))
+    )
+  )
 )
 
+; Read the rest of an identifier token.
+(define (read-identifier-tail read-so-far)
+  (if (delimiter? (peek-char))
+      (token-make 'identifier (string->symbol (list->string read-so-far)))
+      (let ((char (char-downcase (read-char))))
+        (if (subsequent? char)
+            (read-identifier-tail (append read-so-far (list char)))
+            (error "not an identifier")
+        )
+      )
+  )
+)
+
+; Check if a character is an initial character of an identifier.
+(define (initial? char)
+  (cond ((char-alphabetic? char) #t)
+        ((special-initial? char) #t)
+        (else #f)
+  )
+)
+
+; Check if a character is a subsequent character of an identifier.
+(define (subsequent? char)
+  (cond ((digit? char) #t)
+        ((char-alphabetic? char) #t)
+        ((special-initial? char) #t)
+        ((special-subsequent? char) #t)
+        (else #f)
+  )
+)
+
+; Check if character is a special initial character of an identifier.
+(define (special-initial? char)
+  (cond ((char=? #\! char) #t)
+        ((char=? #\$ char) #t)
+        ((char=? #\% char) #t)
+        ((char=? #\& char) #t)
+        ((char=? #\* char) #t)
+        ((char=? #\/ char) #t)
+        ((char=? #\: char) #t)
+        ((char=? #\< char) #t)
+        ((char=? #\= char) #t)
+        ((char=? #\> char) #t)
+        ((char=? #\? char) #t)
+        ((char=? #\^ char) #t)
+        ((char=? #\_ char) #t)
+        ((char=? #\~ char) #t)
+        (else #f)
+  )
+)
+
+; Check if character is a special subsequent character of an identifier.
+(define (special-subsequent? char)
+  (cond ((sign? char) #t)
+        ((char=? #\. char) #t)
+        ((char=? #\@ char) #t)
+        (else #f)
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;
 
