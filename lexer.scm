@@ -156,9 +156,45 @@
 
 ; Read a number token.
 (define (read-number)
-  '() ; replace with your code
+  (let ((char (read-char)))
+    (cond ((sign? char)
+           (read-number-tail (list char)))
+          ((digit? char)
+           (read-number-tail (list char)))
+          ((char=? char #\.)
+           (read-decimal (list char)))
+          (else (error "not a number"))
+    )
+  )
 )
 
+; Read the rest of a number token.
+(define (read-number-tail read-so-far)
+  (if (delimiter? (peek-char))
+      (token-make 'number (string->number (list->string read-so-far)))
+      (let ((char (read-char)))
+        (cond ((digit? char)
+               (read-number-tail (append read-so-far (list char))))
+              ((char=? char #\.)
+               (read-decimal (append read-so-far (list char))))
+              (else (error "not a number"))
+        )
+      )
+  )
+)
+
+; Read the rest of a decimal number.
+(define (read-decimal read-so-far)
+  (if (delimiter? (peek-char))
+      (token-make 'number (string->number (list->string read-so-far)))
+      (let ((char (read-char)))
+        (if (digit? char)
+            (read-decimal (append read-so-far (list char)))
+            (error "not a number")
+        )
+      )
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;
 
