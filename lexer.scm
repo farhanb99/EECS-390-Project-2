@@ -284,7 +284,32 @@
 
 ; Read a punctuator token (i.e. one of ( ) #( . ' ` , ,@ ).
 (define (read-punctuator)
-  '() ; replace with your code
+  (let ((char (read-char)))
+    (cond ((char=? char #\()
+           (token-make 'punctuator (string char)))
+          ((char=? char #\))
+           (token-make 'punctuator (string char)))
+          ((char=? char #\.)
+           (token-make 'punctuator (string char)))
+          ((char=? char #\')
+           (token-make 'punctuator (string char)))
+          ((char=? char #\`)
+           (token-make 'punctuator (string char)))
+          ((char=? char #\#)
+           (if (char=? (read-char) #\()
+               (token-make 'punctuator "#(")
+               (error "not a punctuator")
+           ))
+          ((char=? char #\,)
+           (if (char=? (peek-char) #\@)
+               (begin (read-char)
+                 (token-make 'punctuator ",@")
+               )
+               (token-make 'punctuator ",")
+           ))
+          (else (error "not a punctuator"))
+    )
+  )
 )
 
 ;;;;;;;;;;;;;;;;;;;
