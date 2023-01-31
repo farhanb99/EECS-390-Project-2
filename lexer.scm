@@ -379,9 +379,8 @@
 
 ; Lex the rest of a token that starts with a hashtag.
 (define (read-hashtag)
-  (let ((next-char (peek-char)))
+  (let ((next-char (read-char)))
     (cond ((char=? next-char #\\) ; character
-            (read-char)
             (read-character-tail))
           ((char=? next-char #\() ; punctuator
             (token-make 'punctuator "#("))
