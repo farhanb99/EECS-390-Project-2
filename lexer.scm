@@ -341,9 +341,56 @@
           ((char=? next-char #\;) ; comment
            (read-comment) ; discard it
            (read-token)) ; read another token
-          ; complete this procedure
+          ((char=? next-char #\") ; string
+           (read-string))
+          ((digit? next-char) ; number
+           (read-number))
+          ((sign? next-char) ; number
+           (read-number))
+          ((initial? next-char) ; identifier
+           (read-identifier))
+          ((char=? next-char #\.)
+           (read-char)
+           (read-dot))
+          ((char=? next-char #\#)
+           (read-char)
+           (read-hashtag))
           (else
-           (error "bad token"))
+           (read-punctuator)) ; punctuator
+    )
+  )
+)
+
+; Lex the rest of a token that starts with a dot.
+(define (read-dot)
+  (let ((next-char (peek-char)))
+    (cond ((digit? next-char) ; number
+            (read-decimal (string->list ".")))
+          ((char=? next-char #\.) ; identifier
+            (if (token-match (string->list ".."))
+              (token-make 'identifier (string->symbol "..."))
+              (error "bad token")
+            ))
+          (else
+            (token-make 'punctuator ".")) ; punctuator
+    )
+  )
+)
+
+; Lex the rest of a token that starts with a hashtag.
+(define (read-hashtag)
+  (let ((next-char (peek-char)))
+    (cond ((char=? next-char #\\) ; character
+            (read-char)
+            (read-character-tail))
+          ((char=? next-char #\() ; punctuator
+            (token-make 'punctuator "#("))
+          ((char=? next-char #\t) ; boolean
+            (token-make 'boolean #t))
+          ((char=? next-char #\f) ; boolean
+            (token-make 'boolean #f))
+          (else
+            (error "bad token"))
     )
   )
 )
