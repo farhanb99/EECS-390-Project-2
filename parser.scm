@@ -34,7 +34,7 @@
     (cond ((eof-object? first-token) first-token) ; just return eof
           ((not (simple-datum? first-token))
            (error "not a simple datum"))
-          ; complete this procedure
+          (else (cadr first-token))
     )
   )
 )
@@ -54,7 +54,7 @@
     (cond ((eof-object? first-token) first-token) ; just return eof
           ((simple-datum? first-token)
            (error "not a compound datum"))
-          ; complete this procedure
+          ; (else first-token)
     )
   )
 )
