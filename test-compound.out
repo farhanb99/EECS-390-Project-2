@@ -1,0 +1,8 @@
+Unexpected result:
+  expected: (quote adsf)
+  got: (identifier adsf)
+Unexpected result:
+  expected: (define x 3)
+  got: (identifier define)
+Expected | after datum, got: x
+Error: not a compound datum

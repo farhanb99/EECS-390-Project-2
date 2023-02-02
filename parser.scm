@@ -54,7 +54,7 @@
     (cond ((eof-object? first-token) first-token) ; just return eof
           ((simple-datum? first-token)
            (error "not a compound datum"))
-          ; (else first-token)
+          (else (read-datum))
     )
   )
 )
@@ -78,5 +78,5 @@
 ; possibly only) token is first-token. Raises an error if the datum is
 ; not properly formatted.
 (define (read-datum-helper first-token)
-  '() ; replace with your code
+  first-token
 )
