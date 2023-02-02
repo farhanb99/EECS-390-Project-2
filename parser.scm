@@ -54,6 +54,8 @@
     (cond ((eof-object? first-token) first-token) ; just return eof
           ((simple-datum? first-token)
            (error "not a compound datum"))
+          ((string=? (cadr first-token) "#\'")
+           (token-make 'quote (read-datum)))
           ; (else first-token)
     )
   )
