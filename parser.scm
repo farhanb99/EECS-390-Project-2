@@ -79,7 +79,7 @@
                   (list 'unquote-splicing (cadr second-token)))
             ))
           ((string=? (cadr first-token) "(")
-            (list 'define (cadr (read-datum)))) ; TODO --> list
+            (list 'define (cadr (read-list)))) ; TODO --> list
           ((string=? (cadr first-token) "#(")
             (list 'define (cadr (read-datum)))) ; TODO --> vector
           (else first-token)
@@ -106,6 +106,17 @@
 ; possibly only) token is first-token. Raises an error if the datum is
 ; not properly formatted.
 (define (read-datum-helper first-token)
-
   first-token
+)
+
+(define (read-list)
+  (let ((first-token (read-token)))
+    (if (eq? first-token ")")
+      '()
+      (let ((datum (read-datum)))
+        (cons datum (read-datum))
+        (cons datum (read-list))
+      )
+    )
+  )
 )

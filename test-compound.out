@@ -1,6 +1,2 @@
 Correct result: (quote adsf)
-Unexpected result:
-  expected: (define x 3)
-  got: (define define)
-Expected | after datum, got: x
-Error: not a compound datum
+Error: not a punctuator
