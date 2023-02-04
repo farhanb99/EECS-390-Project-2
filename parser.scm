@@ -111,7 +111,7 @@
 
 (define (read-list)
   (let ((first-token (read-token)))
-    (if (eq? first-token ")")
+    (if (string=? (cadr first-token) ")")
       '()
       (let ((datum (read-datum)))
         (cons datum (read-datum))
