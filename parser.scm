@@ -55,9 +55,33 @@
           ((simple-datum? first-token)
            (error "not a compound datum"))
           ((string=? (cadr first-token) "'")
-            (token-make 'quote (cadr (read-datum))))
+            (let ((second-token (read-datum)))
+              (if (eof-object? second-token)
+                  (error "abbreviation prefix not followed by abbreviation")
+                  (list 'quote (cadr second-token)))
+            ))
+          ((string=? (cadr first-token) "`")
+            (let ((second-token (read-datum)))
+              (if (eof-object? second-token)
+                  (error "abbreviation prefix not followed by abbreviation")
+                  (list 'quasiquote (cadr second-token)))
+            ))
+          ((string=? (cadr first-token) ",")
+            (let ((second-token (read-datum)))
+              (if (eof-object? second-token)
+                  (error "abbreviation prefix not followed by abbreviation")
+                  (list 'unquote (cadr second-token)))
+            ))
+          ((string=? (cadr first-token) ",@")
+            (let ((second-token (read-datum)))
+              (if (eof-object? second-token)
+                  (error "abbreviation prefix not followed by abbreviation")
+                  (list 'unquote-splicing (cadr second-token)))
+            ))
           ((string=? (cadr first-token) "(")
-            (token-make 'define (cadr (read-datum))))
+            (list 'define (cadr (read-datum)))) ; TODO --> list
+          ((string=? (cadr first-token) "#(")
+            (list 'define (cadr (read-datum)))) ; TODO --> vector
           (else first-token)
     )
   )
@@ -82,5 +106,6 @@
 ; possibly only) token is first-token. Raises an error if the datum is
 ; not properly formatted.
 (define (read-datum-helper first-token)
+
   first-token
 )
