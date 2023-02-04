@@ -54,9 +54,11 @@
     (cond ((eof-object? first-token) first-token) ; just return eof
           ((simple-datum? first-token)
            (error "not a compound datum"))
-          ((string=? (cadr first-token) "#\'")
-           (token-make 'quote (read-datum)))
-          ; (else first-token)
+          ((string=? (cadr first-token) "'")
+            (token-make 'quote (cadr (read-datum))))
+          ((string=? (cadr first-token) "(")
+            (token-make 'define (cadr (read-datum))))
+          (else first-token)
     )
   )
 )
@@ -80,5 +82,5 @@
 ; possibly only) token is first-token. Raises an error if the datum is
 ; not properly formatted.
 (define (read-datum-helper first-token)
-  '() ; replace with your code
+  first-token
 )
