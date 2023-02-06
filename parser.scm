@@ -133,7 +133,7 @@
             (let ((next-datum (read-datum)))
                   (cond ((string? next-datum)
                          (if (string=? next-datum ")")
-                             (cons read-so-far datum)
+                             (append read-so-far datum)
                              (error "improper list not correctly formatted")
                          ))
                         (else (error "improper list not correctly formatted"))
