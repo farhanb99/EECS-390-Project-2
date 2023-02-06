@@ -104,7 +104,7 @@
          (read-list '()))
         ((string=? (cadr first-token) "#(")
          (list->vector (read-list '())))
-        (else (error "datum not properly formatted"))
+        (else (cadr first-token))
   )
 )
 
@@ -114,7 +114,7 @@
             (error "datum not properly formatted"))
           ((string=? datum ")")
             read-so-far)
-          (else (read-list (append read-so-far datum)))
+          (else (read-list (append read-so-far (list datum))))
     )
   )
 )
