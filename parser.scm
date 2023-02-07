@@ -40,7 +40,7 @@
 )
 
 (define (read-simple-datum-helper first-token)
-  (cadr first-token)
+  (token-data first-token)
 )
 
 ;;;;;;;;;;;;;;;;;;;
@@ -64,17 +64,17 @@
 
 (define (read-compound-datum-helper first-token)
   (cond ((punctuator? first-token)
-          (cond ((string=? (cadr first-token) "'")
+          (cond ((string=? (token-data first-token) "'")
                   (list 'quote (read-datum)))
-                ((string=? (cadr first-token) "`")
+                ((string=? (token-data first-token) "`")
                   (list 'quasiquote (read-datum)))
-                ((string=? (cadr first-token) ",")
+                ((string=? (token-data first-token) ",")
                   (list 'unquote (read-datum)))
-                ((string=? (cadr first-token) ",@")
+                ((string=? (token-data first-token) ",@")
                   (list 'unquote-splicing (read-datum)))
-                ((string=? (cadr first-token) "(")
+                ((string=? (token-data first-token) "(")
                   (read-sequence '()))
-                ((string=? (cadr first-token) "#(")
+                ((string=? (token-data first-token) "#(")
                   (list->vector (read-sequence '())))
                 (else (error "compound datum not properly formatted"))
           ))
@@ -87,9 +87,9 @@
     (cond ((eof-object? first-token)
             (error "sequence not properly formatted"))
           ((punctuator? first-token)
-            (cond ((string=? (cadr first-token) ")")
+            (cond ((string=? (token-data first-token) ")")
                    read-so-far)
-                  ((string=? (cadr first-token) ".")
+                  ((string=? (token-data first-token) ".")
                     (read-dotted-list read-so-far))
                   (else
                     (read-sequence (append read-so-far (list (read-datum-helper first-token)))))
@@ -106,7 +106,7 @@
           (else
             (let ((next-token (read-token)))
                   (cond ((punctuator? next-token)
-                         (if (string=? (cadr next-token) ")")
+                         (if (string=? (token-data next-token) ")")
                              (append read-so-far (read-datum-helper first-token)) ; TODO: handle case where first-token is compound?
                              (error "improper list not correctly formatted")
                          ))
